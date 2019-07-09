@@ -8,3 +8,6 @@ g++ -I /usr/local/include/ -L /usr/local/lib/ formatText.cpp -o formatText -lzip
 
 ## Run with:
 ./formatText "books/A Black Comedy - nonjon.epub"
+
+## What's next:
+replace generated .txt files with new .txt files from generated Chapter objects, super clean and clear, ready for TTS
