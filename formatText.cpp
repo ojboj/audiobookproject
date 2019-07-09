@@ -28,33 +28,7 @@ void unzip_book(string book_filename) {
   string book_name = remove_ext(get_filename_only(book_filename));
   string chapters_folder_path = "./" + book_name + "/";
 
-  // cout << chapters_folder_path << endl;
-
-  // Check if directory exists, if not, create
-  // boost::filesystem::path dir_path = boost::filesystem::path(chapters_folder_path.c_str());
-  // boost::filesystem::file_status status = boost::filesystem::status(dir_path);
-  //
-  // cout << boost::filesystem::current_path() << endl;
-  //
-  // if (!boost::filesystem::is_directory(status)) {
-  //   cout << " No directory found. Making directory";
-  //   if (boost::filesystem::create_directory(dir_path)) {
-  //     cout << " successful" << endl;
-  //   }
-  //   else {
-  //     cout << " failed" << endl;
-  //   }
-  // }
-  // else {
-  //   cout << " Directory exists" << endl;
-  // }
-  //
-  // const char* path = chapters_folder_path.c_str();
-  // boost::filesystem::path dir(path);
-  // if (boost::filesystem::create_directory(dir)) {
-  //   cout << " Directory created" << endl;
-  // }
-
+  // Use filesystem to create a directory
   filesystem::path path = chapters_folder_path;
   filesystem::create_directory(path);
 
