@@ -4,7 +4,6 @@
 #include <cstring>
 #include <vector>
 #include <zip.h>
-// #include <boost/filesystem.hpp>
 #include <filesystem>
 
 using namespace std;
@@ -150,27 +149,6 @@ int main(int argc, char const *argv[]) {
     else {
       cerr << "No file given, usage is: ./formatText \"ebook.epub\" " << endl;
     }
-
-    // vector<string> book_lines;
-    // // Open file and store in vector
-    // if (ends_with(book_filename, ".epub")) {
-    //     ifstream in_file;
-    //     string temp_line;
-    //     in_file.open("./" + book_filename);
-    //     if (in_file.is_open()) {
-    //         cout << " Successfully opened file: " << book_filename << endl;
-    //         while(getline(in_file, temp_line)) {
-    //             book_lines.push_back(temp_line);
-    //         }
-    //     }
-    //     else {
-    //         cout << " ERROR - file: " << book_filename << " failed to open." << endl;
-    //     }
-    // }
-    //
-    // for (int i = 0; i < book_lines.size(); i++) {
-    //     cout << book_lines[i] << endl;
-    // }
 
     return(0);
 }
