@@ -23,3 +23,7 @@ Locate and link dialogue to the character that speaks it.
 Locate and link any description(s) of a character to the character.
 
 Analyse gathered info on a character to pick out a voice for them (ML).
+
+### Low Priority
+
+Don't overwrite html_files if they already exist.
