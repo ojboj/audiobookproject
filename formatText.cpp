@@ -4,6 +4,7 @@
 #include <cstring>
 #include <filesystem>
 #include <vector>
+#include <algorithm>
 #include <zip.h>
 #include "Chapter.h"
 
@@ -59,8 +60,22 @@ vector<Chapter> chapterise(string book_name) {
           // We have a chapter bois
           is_chapter = true;
 
-          // Get chapter number
-          chapter_number = count_of_chapters;
+          // Get chapter number from file name
+          string file_name = remove_ext(get_filename_only(p.path().string()));
+          string chapter_number_string = "";
+          // Check if correct file
+          if (contains(file_name, "html_file")) {
+            // Get string for html file number
+            for (int j = 9; j < file_name.size(); j++) {
+              chapter_number_string = chapter_number_string + file_name[j];
+            }
+          }
+          else {
+            cerr << "chapterise: .txt file is not called html_fileX, where X is a number" << endl;
+          }
+          if (!chapter_number_string.empty()) {
+            chapter_number = stoi(chapter_number_string);
+          }
           count_of_chapters ++;
 
           // Get chapter title
@@ -120,11 +135,14 @@ vector<Chapter> chapterise(string book_name) {
       }
 
       // Info gathered for chapter, make the Chapter object
-      chapters.push_back(Chapter(chapter_number, chapter_title, disclaimer, body));
+      if (is_chapter) {
+        chapters.push_back(Chapter(chapter_number, chapter_title, disclaimer, body));
+      }
     }
   }
 
-  // Return vector of chapters
+  // Return sorted vector of chapters
+  sort(chapters.begin(), chapters.end());
   return(chapters);
 }
 
@@ -346,6 +364,9 @@ int main(int argc, char const *argv[]) {
       // -- Format .txt files into vector of useful chapters (chapterise)
       string book_name = remove_ext(get_filename_only(book_filename));
       vector<Chapter> chapters = chapterise(book_name);
+
+      // Ouput generated chapter objects to .txt files
+      
     }
     else {
       cerr << "No file given, usage is: ./formatText \"ebook.epub\" " << endl;

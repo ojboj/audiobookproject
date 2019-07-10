@@ -18,6 +18,10 @@ class Chapter {
       this->disclaimer = disc;
       this->body = bod;
     }
-  private:
 
+    // Comparitor for sorting a vector of Chapter objects.
+    bool operator < (const Chapter& ch2) const{
+      return(number < ch2.number);
+    }
+  private:
 };
