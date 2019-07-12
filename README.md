@@ -27,3 +27,5 @@ Analyse gathered info on a character to pick out a voice for them (ML).
 ### Low Priority
 
 Don't overwrite html_files if they already exist.
+
+Change FormatText.h to be defs instead of static functions.
