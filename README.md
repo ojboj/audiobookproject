@@ -4,10 +4,10 @@ Take in an ebook and output an audiobook. Different, matching, voices for dialog
 # Current working notes:
 
 ## Compile with:
-g++ -I /usr/local/include/ -L /usr/local/lib/ formatText.cpp -o formatText -lzip -std=c++17
+g++ -I /usr/local/include/ -L /usr/local/lib/ audioproj.cpp -o audioproj -lzip -std=c++17
 
 ## Run with:
-./formatText "books/A Black Comedy - nonjon.epub"
+./audioproj "books/name_of_ebook.epub"
 
 ## What's next:
 replace generated .txt files with new .txt files from generated Chapter objects, super clean and clear, ready for TTS. - done.
