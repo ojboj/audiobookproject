@@ -10,7 +10,7 @@ g++ -I /usr/local/include/ -L /usr/local/lib/ formatText.cpp -o formatText -lzip
 ./formatText "books/A Black Comedy - nonjon.epub"
 
 ## What's next:
-replace generated .txt files with new .txt files from generated Chapter objects, super clean and clear, ready for TTS.
+replace generated .txt files with new .txt files from generated Chapter objects, super clean and clear, ready for TTS. - done.
 
 Use clean .txt files to generate TTS audio files (m4b?) for each chapter.
 

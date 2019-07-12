@@ -13,6 +13,7 @@ using namespace std;
 // -- Helper functions.
 
 // Delcarations.
+void cleanup_txt_files(string, vector<Chapter>);
 vector<Chapter> chapterise(string);
 string remove_formatting(string);
 bool contains(string, string);
@@ -21,6 +22,38 @@ string get_filename_only(string);
 string remove_ext(string);
 bool starts_with(string, string);
 bool ends_with(string, string);
+
+// Function to change all html_fileX.txt to chapterX.txt.
+void cleanup_txt_files(string book_name, vector<Chapter> chapters) {
+  // Get folder path
+  string chapters_folder_path = "./" + book_name + "/";
+  filesystem::path path = chapters_folder_path;
+
+  // Remove folder and all html_fileX.txt from directory
+  filesystem::remove_all(path);
+  // Create an empty directory
+  filesystem::create_directory(path);
+
+  // Iterate through each Chapter object
+  for (int i = 0; i < chapters.size(); i ++) {
+    // Generating path
+    string out_file_path = chapters_folder_path + "chapter" + to_string(i) + ".txt";
+    // Opening file to write to
+    ofstream out_file;
+    out_file.open(out_file_path);
+    // Writing to file
+    out_file << "chapter_title:" << endl;
+    out_file << chapters[i].title << endl << endl;
+    //
+    // out_file << "chapter_disclaimer:" << endl;
+    // out_file << chapters[i].disclaimer << endl << endl;;
+
+    out_file << "chapter_body:" << endl;
+    out_file << chapters[i].body << endl;
+
+    out_file.close();
+  }
+}
 
 // Function to turn folder of .txt files into chapter objects.
 vector<Chapter> chapterise(string book_name) {
@@ -51,10 +84,11 @@ vector<Chapter> chapterise(string book_name) {
       int chapter_number = 0;
       string chapter_title = "";
       string disclaimer = "";
-      string body;
+      string raw_body = "";
 
       // Check file_buffer data to see if chapter
       for (int i = 0; i < file_buffer.size(); i++) {
+
         // Line signifying a chapter is unique at this point
         if (starts_with(file_buffer[i], "<h2 style")) {
           // We have a chapter bois
@@ -91,52 +125,69 @@ vector<Chapter> chapterise(string book_name) {
           }
           chapter_title = file_buffer[i].substr(title_start, title_end-title_start);
         }
-        // Check for line leading paragraphs
-        else if (is_chapter && starts_with(file_buffer[i], "<p>")) {
-          // Find if body or disclaimer
-
-          // If disclaimer
-          if (contains(file_buffer[i], "Disclaimer") || contains(file_buffer[i], "disclaimer")) {
-            // Get disclaimer paragraph
-            string raw_disclaimer = "";
-            for (int j = i; j < file_buffer.size(); j++) {
-              // Check if line is still part of disclaimer
-              if (!contains(file_buffer[j], "<hr/>")) {
-                raw_disclaimer = raw_disclaimer + file_buffer[j];
-              }
-              // If line is where chapter body begins, set i and break
-              else {
-                i = j;
-                break;
-              }
-            }
-            // Format raw disclaimer text nicely, remove formatting symbolica
-            disclaimer = remove_formatting(raw_disclaimer);
-          }
-          // If body
-          else {
-            // Get all of body, replace </p> with \n
-            string raw_body = "";
-            for (int j = i; j < file_buffer.size(); j++) {
-              // Check if line is still part of body
-              if (!contains(file_buffer[j], "/div")) {
-                raw_body = raw_body + file_buffer[j];
-              }
-              // If line is where chapter body ends, set i and break
-              else {
-                i = j;
-                break;
-              }
-            }
-            // Format raw body text nicely, remove formatting symbolica
-            body = remove_formatting(raw_body);
-          }
+        // If is_chapter, rest of file is body
+        else if (is_chapter) {
+          raw_body = raw_body + file_buffer[i] + " ";
         }
+
+        // // Check if line has <p>
+        // else if (is_chapter && contains(file_buffer[i], "<p>")) {
+        //   // If disclaimer
+        //   if (contains(file_buffer[i], "Disclaimer") || contains(file_buffer[i], "disclaimer")) {
+        //     // Get disclaimer paragraph
+        //     string raw_disclaimer = "";
+        //     for (int j = i; j < file_buffer.size(); j++) {
+        //       // Check if line is still part of disclaimer
+        //       if (!contains(file_buffer[j], "</p>")) {
+        //         raw_disclaimer = raw_disclaimer + file_buffer[j];
+        //       }
+        //       // If line is where chapter body begins, set i and break
+        //       else {
+        //         int start_from = 0;
+        //         for (int k = 0; k < file_buffer[j].size(); k++) {
+        //           if (file_buffer[j][k] == '/' && file_buffer[j][k+1] == 'p') {
+        //             start_from = k+3;
+        //           }
+        //         }
+        //         raw_disclaimer = raw_disclaimer + file_buffer[j].substr(0, start_from);
+        //         i = j;
+        //         leftover = true;
+        //         leftover_from_disclaimer = file_buffer[j].substr(start_from, file_buffer[j].size()-start_from);
+        //         break;
+        //       }
+        //     }
+        //     // Format raw disclaimer text nicely, remove formatting symbolica
+        //     disclaimer = remove_formatting(raw_disclaimer);
+        //   }
+        //   // If body
+        //   else {
+        //     // Get all of body, replace </p> with \n
+        //     string raw_body = "";
+        //     if (leftover) {
+        //       raw_body = leftover_from_disclaimer;
+        //     }
+        //     for (int j = i; j < file_buffer.size(); j++) {
+        //       // Check if line is still part of body
+        //       if (!contains(file_buffer[j], "/div")) {
+        //         raw_body = raw_body + file_buffer[j];
+        //       }
+        //       // If line is where chapter body ends, set i and break
+        //       else {
+        //         i = j;
+        //         break;
+        //       }
+        //     }
+        //     // Format raw body text nicely, remove formatting symbolica
+        //     body = remove_formatting(raw_body);
+        //   }
+        // }
       }
+      // Remove formatting from body
+      string body = remove_formatting(raw_body);
 
       // Info gathered for chapter, make the Chapter object
       if (is_chapter) {
-        chapters.push_back(Chapter(chapter_number, chapter_title, disclaimer, body));
+        chapters.push_back(Chapter(chapter_number, chapter_title, body));
       }
     }
   }
@@ -153,11 +204,11 @@ string remove_formatting(string raw_html) {
     // If you find any html formatting
     if (raw_html[i] == '<') {
       bool new_line = false;
-      // If find </p>, mark for replacement with \n
-      if (raw_html[i+1] == '/' && raw_html[i+2] == 'p') {
+      // If find <p>, mark for replacement with \n
+      if (raw_html[i+1] == 'p' && raw_html[i+2] == '>') {
         new_line = true;
       }
-      // Find where it ends and being loop from there, skipping it
+      // Find where it ends and begin loop from there, skipping it
       int j = i+1;
       while (raw_html[j] != '>' && j < raw_html.size()) {
         j++;
@@ -166,13 +217,25 @@ string remove_formatting(string raw_html) {
       if (new_line) {
         text = text + '\n';
       }
+      // // Else, add a space
+      // else {
+      //   text = text + ' ';
+      // }
       i = j;
     }
-    else {
+    else if (raw_html[i] == '\n') {
+      text = text + ' ';
+    }
+    // If not a double space, add to text
+    else if (!(raw_html[i-1] == ' ' && raw_html[i] == ' ')){
       text = text + raw_html[i];
     }
   }
 
+  // Remove unnecessary \n chars
+  while (text[text.size()-1] == '\n') {
+    text = text.substr(0, text.size()-1);
+  }
   return(text);
 }
 
@@ -256,13 +319,11 @@ void unzip_book(string book_filename) {
 
       // Output file to folder
       string out_file_path = chapters_folder_path + "html_file" + to_string(count_of_html_files) + ".txt";
-      if (!ofstream(out_file_path).write(contents, st.size))
-      {
+      if (!ofstream(out_file_path).write(contents, st.size)) {
         cerr << "unzip_book: could not write file: " << name_of_file << endl;
       }
       count_of_html_files ++;
     }
-
   }
 
   zip_close(z);
@@ -313,12 +374,7 @@ string remove_ext(string book_filename) {
 bool starts_with(string full_string, string prefix) {
   if (!full_string.empty() && !prefix.empty()) {
     string prefix_of_full_string = full_string.substr(0, prefix.size());
-    if (prefix_of_full_string.compare(prefix) == 0) {
-      return(true);
-    }
-    else {
-      return(false);
-    }
+    return(prefix_of_full_string.compare(prefix) == 0);
   }
   else {
     return(false);
@@ -329,12 +385,7 @@ bool starts_with(string full_string, string prefix) {
 bool ends_with(string full_string, string suffix) {
   if (!full_string.empty() && !suffix.empty()) {
     string suffix_of_full_string = full_string.substr(full_string.size()-suffix.size(), suffix.size());
-    if (suffix_of_full_string.compare(suffix) == 0) {
-      return(true);
-    }
-    else {
-      return(false);
-    }
+    return(suffix_of_full_string.compare(suffix) == 0);
   }
   else {
     return(false);
@@ -366,7 +417,7 @@ int main(int argc, char const *argv[]) {
       vector<Chapter> chapters = chapterise(book_name);
 
       // Ouput generated chapter objects to .txt files
-      
+      cleanup_txt_files(book_name, chapters);
     }
     else {
       cerr << "No file given, usage is: ./formatText \"ebook.epub\" " << endl;

@@ -8,14 +8,12 @@ class Chapter {
   public:
     int number;
     string title;
-    string disclaimer;
     string body;
 
     // Constructor for a chapter.
-    Chapter(int num, string tit, string disc, string bod) {
+    Chapter(int num, string tit, string bod) {
       this->number = num;
       this->title = tit;
-      this->disclaimer = disc;
       this->body = bod;
     }
 
