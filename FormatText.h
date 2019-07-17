@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <zip.h>
 #include "Chapter.h"
+#include "StringHelper.h"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ class FormatText {
       bool unzipped = false;
 
       // If .epub file, unzip and fetch .txt files
-      if (ends_with(book_filename, ".epub")) {
+      if (StringHelper::ends_with(book_filename, ".epub")) {
         unzipped = unzip_book(book_filename);
       }
       // If other types, here: TODO
@@ -91,7 +92,7 @@ class FormatText {
         // Iterate through all files in the folder
         for(auto& p: filesystem::directory_iterator(text_folder_path)) {
           // If .txt file
-          if (ends_with(p.path().string(), ".txt")) {
+          if (StringHelper::ends_with(p.path().string(), ".txt")) {
             // Load text from the found text file
             vector<string> file_buffer;
             ifstream in_file;
@@ -118,7 +119,7 @@ class FormatText {
             for (int i = 0; i < file_buffer.size(); i++) {
 
               // Line signifying a chapter is unique at this point
-              if (starts_with(file_buffer[i], "<h2 style")) {
+              if (StringHelper::starts_with(file_buffer[i], "<h2 style")) {
                 // We have a chapter bois
                 is_chapter = true;
 
@@ -126,7 +127,7 @@ class FormatText {
                 string file_name = remove_ext(get_filename_only(p.path().string()));
                 string chapter_number_string = "";
                 // Check if correct file
-                if (contains(file_name, "html_file")) {
+                if (StringHelper::contains(file_name, "html_file")) {
                   // Get string for html file number
                   for (int j = 9; j < file_name.size(); j++) {
                     chapter_number_string = chapter_number_string + file_name[j];
@@ -256,7 +257,7 @@ class FormatText {
 
               // Test if .html
               string name_of_file = name;
-              if (ends_with(name_of_file, ".html")) {
+              if (StringHelper::ends_with(name_of_file, ".html")) {
                 // Get file info
                 struct zip_stat st;
                 zip_stat_init(&st);
@@ -326,63 +327,6 @@ class FormatText {
       }
       else {
         return(book_filename);
-      }
-    }
-
-    // Function to check if a string starts with a prefix.
-    static bool starts_with(string full_string, string prefix) {
-      if (!full_string.empty() && !prefix.empty()) {
-        string prefix_of_full_string = full_string.substr(0, prefix.size());
-        return(prefix_of_full_string.compare(prefix) == 0);
-      }
-      else {
-        return(false);
-      }
-    }
-
-    // Function to check if a string ends with a suffix.
-    static bool ends_with(string full_string, string suffix) {
-      if (!full_string.empty() && !suffix.empty()) {
-        string suffix_of_full_string = full_string.substr(full_string.size()-suffix.size(), suffix.size());
-        return(suffix_of_full_string.compare(suffix) == 0);
-      }
-      else {
-        return(false);
-      }
-    }
-
-    // Function to check if a string containts another string.
-    static bool contains(string full_string, string candidate) {
-      int successing_chars = 0;
-      // Check if strings are empty and candidate is smaller
-      if (!full_string.empty() && !candidate.empty() && candidate.size() <= full_string.size()) {
-        // Iterate through chars
-        for (int i = 0; i < full_string.size(); i++) {
-          // If find the first char
-          if (full_string[i] == candidate[0]) {
-            // Increment running total
-            successing_chars ++;
-            for (int j = 1; j < candidate.size(); j++) {
-              // If not a match, reset and break this test
-              if (!(full_string[i+j] == candidate[j])) {
-                successing_chars = 0;
-                break;
-              }
-              // If a match, increment
-              else {
-                successing_chars ++;
-                // If found all successing chars, return true
-                if (successing_chars == candidate.size()) {
-                  return(true);
-                }
-              }
-            }
-          }
-        }
-        return(false);
-      }
-      else {
-        return(false);
       }
     }
 };

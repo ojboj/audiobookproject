@@ -10,7 +10,7 @@ class Chapter {
     string title;
     string body;
 
-    // Constructor for a chapter.
+    // Constructor for a Chapter.
     Chapter(int num, string tit, string bod) {
       this->number = num;
       this->title = tit;
