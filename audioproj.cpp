@@ -9,7 +9,7 @@ using namespace std;
 // -- Main method
 
 int main(int argc, char const *argv[]) {
-    // Will be called as, formatText "ebook_with_extension"
+    // Will be called as, audiobookproj "ebook_with_extension"
 
     // If given a filename
     if (argc > 1) {

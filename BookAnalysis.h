@@ -22,7 +22,7 @@ class BookAnalysis {
       // Output into a .txt file for python
       output_capitals(capitals);
       // Use python and keras to classify the words
-
+      // TODO: this is where you are at
       // Use output from ^ to get only the words that are thought to be proper nouns
 
       // Delete temporay files
