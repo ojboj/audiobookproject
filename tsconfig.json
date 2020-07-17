@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es7", "dom"],
-    "types": [],
+    "types": [
+      "mocha"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "experimentalDecorators": true,
