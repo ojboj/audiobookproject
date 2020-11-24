@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 
-import { run } from './main';
+import { main } from './main';
 
 describe('#main', () => {
   it(`should print to console and return true`, () => {
@@ -9,7 +9,7 @@ describe('#main', () => {
     const consoleSpy = sinon.spy(console, 'log');
 
     // Invocations
-    const result = run();
+    const result = main();
 
     // Expectation
     expect(consoleSpy.calledWith('It begins!')).to.eql(true);
