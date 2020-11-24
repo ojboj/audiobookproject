@@ -1,0 +1,8 @@
+# .epub files
+**/*.epub
+
+# .wav files
+**/*.wav
+
+# Directory for book related data for pre-training/chunking
+py/tts/pre-training/books

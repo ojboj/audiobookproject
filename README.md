@@ -5,4 +5,4 @@ Use tacotron2 to provide Text-To-Speech(TTS) synthesis.
 Use Natural Language Processing(NLP) and Named Entity Recognition(NER) to find named character and associated dialogue/descriptors.
 
 # Current working notes:
-- Need to move repo from being setup to be written in TypeScript to being done, mostly, in Python.
+- See 'notes' folder for somewhat documented progression.
