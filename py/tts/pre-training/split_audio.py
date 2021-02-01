@@ -8,6 +8,8 @@ import webrtcvad
 
 from tqdm import tqdm
 
+import helpers
+
 
 def read_wave(path):
     """Reads a .wav file.
@@ -147,15 +149,20 @@ def main(args):
     vad = webrtcvad.Vad(int(args[0]))
     frames = frame_generator(30, audio, sample_rate)
     frames = list(frames)
-    segments = vad_collector(sample_rate, 30, 300, vad, frames)
+    segments_gen = vad_collector(sample_rate, 30, 300, vad, frames)
+    # Put values from generator into an array
+    segments = []
+    for segment in segments_gen:
+        segments.append(segment)
+
     # Creating path to chunks directory
-    dir_path = '/'.join(args[1].split('/')[0:-1]) + '/audio_chunks'
+    dir_path = helpers.get_parent_folder_from_path(args[1]) + '/audio_chunks'
     # Creating chunks directory, if it doesn't exist yet
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
     # Writing each audio file
     for i, segment in enumerate(segments):
-        file_name = '/chunk-%002d.wav' % (i,)
+        file_name = '/chunk-%00{}d.wav'.format(len(str(len(segments)-1))) % (i,)
         write_wave(dir_path + file_name, segment, sample_rate)
 
 

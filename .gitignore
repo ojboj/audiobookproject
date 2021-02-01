@@ -4,5 +4,8 @@
 # .wav files
 **/*.wav
 
+# .pyc files
+**/*.pyc
+
 # Directory for book related data for pre-training/chunking
 py/tts/pre-training/books
