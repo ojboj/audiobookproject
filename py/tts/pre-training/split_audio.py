@@ -162,7 +162,7 @@ def main(args):
         os.mkdir(dir_path)
     # Writing each audio file
     for i, segment in enumerate(segments):
-        file_name = '/chunk-%00{}d.wav'.format(len(str(len(segments)-1))) % (i,)
+        file_name = '/{}%00{}d.wav'.format(helpers.CHUNK_STRING, len(str(len(segments)-1))) % (i,)
         write_wave(dir_path + file_name, segment, sample_rate)
 
 

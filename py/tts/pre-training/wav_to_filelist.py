@@ -1,4 +1,5 @@
 import sys
+import argparse
 
 import subprocess
 import speech_recognition as sr
@@ -8,15 +9,7 @@ from tqdm import tqdm
 import helpers
 
 # script to take a whole wav file and split it into chunks of audio, then transcribe each one
-
-def main(args):
-    if len(args) != 1:
-        sys.stderr.write(
-            'Usage: wav_to_filelist.py <path to wav file>\n')
-        sys.exit(1)
-
-    path_to_wav = args[0]
-
+def main(path_to_wav, args):
     # split audio into chunks, using split_audio.py
     print("splitting wav into chunks..")
     split_audio_cmd = ['python', 'split_audio.py', '3', path_to_wav]
@@ -42,9 +35,12 @@ def main(args):
             helpers.write_text_file(text_chunks_directory_path + '/' + filename_with_txt, transcription)
         # If failed to transcribe, add to list of chunks that need a manual text file made
         except sr.UnknownValueError:
-            chunks_that_need_manual.append(filename_with_txt)
-            # write a blank text file, for now
-            helpers.write_text_file(text_chunks_directory_path + '/' + filename_with_txt, " ")
+            # If not flagging to skip untranscribables, add to running list and store an empty file
+            if not args.skip_untrans:
+                chunks_that_need_manual.append(filename_with_txt)
+                # write a blank text file, for now
+                helpers.write_text_file(text_chunks_directory_path + '/' + filename_with_txt, " ")
+            # Else do nothing, aka skip
 
     if len(chunks_that_need_manual) != 0:
         # If any chunks couldn't be transcribed, don't build the filelist and instead report that they need manual entry
@@ -53,10 +49,19 @@ def main(args):
             print(chunk)
     else:
         # run chunks_to_filelist
-        chunks_to_filelist_cmd = ['python', 'chunks_to_filelist.py', parent_path]
+        chunks_to_filelist_cmd = ['python', 'chunks_to_filelists.py', parent_path]
         subprocess.Popen(chunks_to_filelist_cmd).wait()
 
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    parser = argparse.ArgumentParser(description='turn a single audio file of spoken word into a filelist suitable for tacotron2')
+    parser.add_argument('-i', '--input_wav', type=str, required=True,
+                        help='audio file, in .wav format, to form filelist for')
+    parser.add_argument('-s', '--skip_untrans', action='store_true', default=False,
+                        help='flag to indicate that you wish to skip audio chunks that couldn\'t be transcribed')
+
+    args = parser.parse_args()
+    path_to_wav = args.input_wav
+
+    main(path_to_wav, args)
