@@ -2,7 +2,10 @@
 **/*.epub
 
 # -chunk.txt files
-**/*-chunk*.txt
+**/chunk*.txt
+
+# filelist.txt files
+**/*_filelist.txt
 
 # .wav files
 **/*.wav
@@ -11,4 +14,4 @@
 **/*.pyc
 
 # Directory for book related data for pre-training/chunking
-py/tts/pre-training/books
+py_src/tts/pre-training/books

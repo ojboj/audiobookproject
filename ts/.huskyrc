@@ -1,6 +1,0 @@
-{
-  "hooks": {
-    "pre-commit": "yarn lint && yarn prettier:fix",
-    "pre-push": "yarn build"
-  }
-}
