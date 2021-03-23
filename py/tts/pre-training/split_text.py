@@ -27,7 +27,7 @@ def main(args):
     sentences = get_sentences(text)
 
     # Creating path to chunks directory
-    dir_path = '/'.join(text_file_path.split('/')[0:-1]) + '/text_chunks'
+    dir_path = os.path.join(os.path.dirname(text_file_path), 'text_chunks')
     # Creating chunks directory, if it doesn't exist yet
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)

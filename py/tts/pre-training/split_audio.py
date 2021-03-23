@@ -156,14 +156,16 @@ def main(args):
         segments.append(segment)
 
     # Creating path to chunks directory
-    dir_path = helpers.get_parent_folder_from_path(args[1]) + '/audio_chunks'
+    dir_path = os.path.join(helpers.get_parent_folder_from_path(args[1]), 'audio_chunks')
     # Creating chunks directory, if it doesn't exist yet
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
     # Writing each audio file
     for i, segment in enumerate(segments):
-        file_name = '/{}%00{}d.wav'.format(helpers.CHUNK_STRING, len(str(len(segments)-1))) % (i,)
-        write_wave(dir_path + file_name, segment, sample_rate)
+        # only use samples that are under 333000, to ensure consistent batch sizes
+        if len(segment) < 333000:
+            file_name = helpers.OS_SEPARATOR + '{}%00{}d.wav'.format(helpers.CHUNK_STRING, len(str(len(segments)-1))) % (i,)
+            write_wave(dir_path + file_name, segment, sample_rate)
 
 
 if __name__ == '__main__':

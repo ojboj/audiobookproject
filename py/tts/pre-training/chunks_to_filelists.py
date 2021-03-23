@@ -1,4 +1,5 @@
 import sys
+import os
 import math
 import random
 
@@ -56,7 +57,8 @@ def form_pairs_from_texts_and_filepaths(text_filepaths, audio_filepaths):
         if len(matching_audio_chunks) == 1:
             pair = {}
             pair["chunk_text"] = get_text_chunk_string(text_filepath)
-            pair["file_path"] = matching_audio_chunks[0]
+            # tacotron2 needs '/' not OS_SEPARATOR in the filelists, so need to do a replace
+            pair["file_path"] = matching_audio_chunks[0].replace(helpers.OS_SEPARATOR, '/')
             pairs.append(pair)
         # else, move on
     return pairs
@@ -64,7 +66,7 @@ def form_pairs_from_texts_and_filepaths(text_filepaths, audio_filepaths):
 def main(args):
     if len(args) < 1 or len(args) > 2:
         sys.stderr.write(
-            'Usage: chunks_to_filelist.py <path to parent chunk folders> <(optional) number of chunks>\n')
+            'Usage: chunks_to_filelist.py <path to parent chunk folders> <(optional) number of chunks to limit to>\n')
         sys.exit(1)
 
     # limit, if it exists
@@ -76,10 +78,10 @@ def main(args):
     parent_path = args[0]
 
     # get the audio file audio_filepaths
-    audio_filepaths = helpers.get_audio_chunk_filepaths(parent_path + "/audio_chunks", limit)
+    audio_filepaths = helpers.get_audio_chunk_filepaths(os.path.join(parent_path, "audio_chunks"), limit)
 
     # get the text chunk filepaths
-    text_chunk_filepaths = helpers.get_text_chunk_filepaths(parent_path + "/text_chunks", limit)
+    text_chunk_filepaths = helpers.get_text_chunk_filepaths(os.path.join(parent_path, "text_chunks"), limit)
 
     # form into pairs
     pairs = form_pairs_from_texts_and_filepaths(text_chunk_filepaths, audio_filepaths)
@@ -89,8 +91,8 @@ def main(args):
     textfiles = pairs_to_text(pairs, train_ratio)
 
     # write to train and val filelists files
-    helpers.write_text_file(parent_path + "/train_filelist.txt", textfiles["train"])
-    helpers.write_text_file(parent_path + "/val_filelist.txt", textfiles["val"])
+    helpers.write_text_file(os.path.join(parent_path, "train_filelist.txt"), textfiles["train"])
+    helpers.write_text_file(os.path.join(parent_path, "val_filelist.txt"), textfiles["val"])
 
 
 if __name__ == '__main__':

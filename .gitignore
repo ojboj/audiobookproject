@@ -1,6 +1,9 @@
 # .epub files
 **/*.epub
 
+# -chunk.txt files
+**/*-chunk*.txt
+
 # .wav files
 **/*.wav
 
