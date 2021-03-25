@@ -10,6 +10,12 @@
 # .wav files
 **/*.wav
 
+# outdir and logdir
+**/outdir*
+
+# model/checkpoint files
+**/*.pt
+
 # .pyc files
 **/*.pyc
 
