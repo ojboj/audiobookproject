@@ -3,6 +3,7 @@ sys.path.append('../training/')
 sys.path.append('../training/waveglow/')
 
 import numpy as np
+import matplotlib.pylab as plt
 import torch
 
 from hparams import create_hparams
@@ -50,7 +51,7 @@ class Inferer:
     def write_wav(self, output_path, audio_numpy):
         write_wav(output_path, self.sample_rate, audio_numpy)
 
-    def infer(self, text, output_path=None):
+    def infer(self, text, output_path=None, all_inference_data=False):
         # Formulate sequence for given text
         sequence = np.array(text_to_sequence(text, ['english_cleaners']))[None, :]
         sequence = torch.autograd.Variable(
@@ -67,13 +68,31 @@ class Inferer:
         audio_denoised = self.denoiser(audio, strength=0.01)[:, 0]
 
         # get numpy representation
-        audio_numpy = audio_denoised[0].data.cpu().numpy()
+        denoised_audio_numpy = audio_denoised[0].data.cpu().numpy()
 
-        # write to wav file or return audio numpy
+        # if specified, write to wav file
         if output_path != None:
-            self.write_wav(output_path, audio_numpy)
+            self.write_wav(output_path, denoised_audio_numpy)
+
+        # return either just the denoised nump array, or all the inference data, in a dict
+        if all_inference_data:
+            all_data = {}
+            all_data["audio_numpy"] = audio[0].data.cpu().numpy()
+            all_data["denoised_audio_numpy"] = denoised_audio_numpy
+            # adding the information needed for plotting mels and alignment visualisations
+            all_data["mel_outputs_numpy"] = mel_outputs.float().data.cpu().numpy()[0]
+            all_data["mel_outputs_postnet_numpy"] = mel_outputs_postnet.float().data.cpu().numpy()[0]
+            all_data["alignments_numpy_T"] = alignments.float().data.cpu().numpy()[0].T
+
+            return all_data
         else:
-            return audio_numpy
+            return denoised_audio_numpy
+
+    def plot_data(self, data, figsize=(16, 4)):
+        fig, axes = plt.subplots(1, len(data), figsize=figsize)
+        for i in range(len(data)):
+            axes[i].imshow(data[i], aspect='auto', origin='bottom',
+                           interpolation='none')
 
     def stitch_audio(self, audio_1_numpy, audio_2_numpy, interval_seconds=0.5):
         samples_in_interval = int(interval_seconds * self.sample_rate)
